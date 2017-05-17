@@ -133,9 +133,7 @@ function sync(directory) {
     children.forEach(function(child) {
       if (!child.hasOwnProperty("children")) {
         if (!(child["name"]).endsWith('.crypt')) {
-
           // check if the file already exists in the db
-
           db.findOne({
             "path": child["path"],
             "type": 'file'
@@ -282,10 +280,10 @@ function sync(directory) {
 
   var Datastore = require('nedb');
   var db = new Datastore({
-    filename: path.join(config.DATADIR, directory, 'table')
+    filename: path.join(directory, '.storjsync', 'main.table')
   });
 
-  var fileTree = dirTree(directory);
+  var fileTree = dirTree(directory, {exclude: /.storjsync/});
   var children = fileTree["children"];
 
   db.loadDatabase(function(err) {
@@ -328,6 +326,10 @@ function sync(directory) {
     });
   });
 };
-//
-// //setInterval(function(){sync('./data')}, 10000);
-// firstSync('./test', '/snaphots/timestamp')
+
+function firstSync(directory) {
+  return syncDir(directory, 'main.table');
+}
+
+module.exports.firstSync = firstSync;
+module.exports.sync = sync;

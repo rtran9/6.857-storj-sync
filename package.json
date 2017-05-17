@@ -4,7 +4,7 @@
   "description": "Storj Folder Sync",
   "main": "index.js",
   "bin": {
-    "storjsync": "bin/storjsync.js"
+    "storjsync": "src/bin/storjsync.js"
   },
   "dependencies": {
     "commander": "^2.9.0",

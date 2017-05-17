@@ -16,6 +16,8 @@ var log = logger().log;
 var utils = require('./utils');
 var actions = require('./index');
 var url = require('url');
+var sync = require('./../sync.js')
+var snapshot = require('./../snapshot.js')
 
 var HOME = platform !== 'win32' ? process.env.HOME : process.env.USERPROFILE;
 var DATADIR = path.join(HOME, '.storjsync');
@@ -29,7 +31,7 @@ prompt.delimiter = colors.cyan('  > ');
 program._storj = {};
 
 program.version(
-  'Storjsync: ' + require('../package').version + ' | ' +
+  'Storjsync: ' + require('../../package').version + ' | ' +
   'Core: ' + storj.version.software
 );
 
@@ -427,12 +429,37 @@ program
   .description('deletes the deterministic seed from the keyring')
   .action(actions.seed.deleteSeed.bind(program));
 
-
 program
   .command('*')
   .description('prints the usage information to the console')
   .action(ACTIONS.fallthrough);
 
+program
+  .command('init-sync')
+  .description('initalize sync')
+  .action(sync.firstSync);
+
+program
+  .command('sync')
+  .description('sync')
+  .action(sync.sync);
+
+program
+  .command('snapshot')
+  .description('snapshot a director')
+  .action(snapshot.snapshot);
+
+program
+  .command('list-snapshots')
+  .description('list snaphots for a directory')
+  .action(snapshot.getSnapshots);
+
+program
+  .command('download-snapshot')
+  .description('download a snapshot')
+  .action(snapshot.downloadSnapshot);
+
+// sync.syncDir('./../test')
 // NB: If piping output to another program that does not consume all the output
 // NB: (like `head`), don't throw an error.
 process.stdout.on('error', function(err) {
