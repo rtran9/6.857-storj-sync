@@ -6,17 +6,18 @@ var fs = require('fs');
 var config = require('./config.js')
 var mkdirp = require('mkdirp');
 
-// Load keypair from your saved private key
-var keypair = storj.KeyPair(fs.readFileSync(config.KEYPATH).toString());
-
-// console.login using the keypair generated
-var client = storj.BridgeClient(config.API, {keyPair: keypair});
-
-// Key ring to hold key used to interact with uploaded file
-var keyring = storj.KeyRing(config.DATADIR, 'keypass');
-
 
 module.exports.downloadFile = function(bucketid, fileid, filepath, callback){
+
+    // Load keypair from your saved private key
+    var keypair = storj.KeyPair(fs.readFileSync(config.KEYPATH).toString());
+
+    // console.login using the keypair generated
+    var client = storj.BridgeClient(config.API, {keyPair: keypair});
+
+    // Key ring to hold key used to interact with uploaded file
+    var keyring = storj.KeyRing(config.DATADIR, 'keypass');
+
     console.log("Downloading file . . .");
 
     var path = filepath.substring(0, Math.max(filepath.lastIndexOf("/"), filepath.lastIndexOf("\\")));
@@ -125,7 +126,3 @@ module.exports.downloadFile = function(bucketid, fileid, filepath, callback){
         });
     }
 }
-
-
-
-

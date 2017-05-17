@@ -5,30 +5,33 @@ var fs = require('fs');
 var uuidV4 = require('uuid/v4');
 var config = require('./config.js')
 
-// How many pieces of the file can be uploaded at once
-var concurrency = 6;
-var keypair = storj.KeyPair(fs.readFileSync(config.KEYPATH).toString());
 
-// console.login using the keypair generated
-var client = storj.BridgeClient(config.API, {
-  keyPair: keypair,
-  concurrency: concurrency // Set upload concurrency
-});
+module.exports.uploadFile = function(bucketID, filepath, callback) {
 
-// Key ring to hold key used to interact with uploaded file
-var keyring = storj.KeyRing(config.DATADIR, 'keypass');
+  // How many pieces of the file can be uploaded at once
+  var concurrency = 6;
+  var keypair = storj.KeyPair(fs.readFileSync(config.KEYPATH).toString());
 
-module.exports.uploadFile = function(bucketID, filepath, callback){
-    console.log(("Uploading file from path: ").concat(filepath.toString().concat(" . . .")));
-    // Path to temporarily store encrypted version of file to be uploaded
-    var tmppath = './' + filepath + '.crypt';
-    // Prepare to encrypt file for upload
-    var secret = new storj.DataCipherKeyIv();
-    var encrypter = new storj.EncryptStream(secret);
-    //Encrypt the file to be uploaded and store it temporarily
-    fs.createReadStream(filepath)
-      .pipe(encrypter)
-      .pipe(fs.createWriteStream(tmppath)).on('finish', function() {
+  // console.login using the keypair generated
+  var client = storj.BridgeClient(config.API, {
+    keyPair: keypair,
+    concurrency: concurrency // Set upload concurrency
+  });
+
+  // Key ring to hold key used to interact with uploaded file
+  var keyring = storj.KeyRing(config.DATADIR, 'keypass');
+
+
+  console.log(("Uploading file from path: ").concat(filepath.toString().concat(" . . .")));
+  // Path to temporarily store encrypted version of file to be uploaded
+  var tmppath = './' + filepath + '.crypt';
+  // Prepare to encrypt file for upload
+  var secret = new storj.DataCipherKeyIv();
+  var encrypter = new storj.EncryptStream(secret);
+  //Encrypt the file to be uploaded and store it temporarily
+  fs.createReadStream(filepath)
+    .pipe(encrypter)
+    .pipe(fs.createWriteStream(tmppath)).on('finish', function() {
 
       // Create token for uploading to bucket by bucketID
       client.createToken(bucketID, 'PUSH', function(err, token) {
