@@ -100,8 +100,6 @@ function firstSync(directory) {
   })
 }
 
-//firstSync('./test')
-
 
 function recurseSync(parent, children) {
   children.forEach(function(child) {
@@ -256,6 +254,7 @@ function recurseSync(parent, children) {
 }
 
 function getAllFiles(directory) {
+  console.log(directory);
   var files = [];
   var fileTree = dirTree(directory);
 
@@ -304,7 +303,7 @@ function sync(directory) {
     }
   });
 
-  var allFiles = getAllFiles('./test');
+  var allFiles = getAllFiles(directory);
   db.loadDatabase(function(err) {
     db.find({
       "type": "file"
@@ -330,4 +329,5 @@ function sync(directory) {
   })
 }
 
-firstsync('./test')
+setInterval(function(){sync('./data')}, 10000);
+// sync('./data')

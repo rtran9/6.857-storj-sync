@@ -19,6 +19,7 @@ var client = storj.BridgeClient(config.API, {
 var keyring = storj.KeyRing(config.DATADIR, 'keypass');
 
 module.exports.uploadFile = function(bucketID, filepath, callback){
+    console.log(("Uploading file from path: ").concat(filepath.toString().concat(" . . .")));
     // Path to temporarily store encrypted version of file to be uploaded
     var tmppath = './' + filepath + '.crypt';
     // Prepare to encrypt file for upload
@@ -50,6 +51,7 @@ module.exports.uploadFile = function(bucketID, filepath, callback){
             'info',
             file
           );
+          console.log(("Uploaded ").concat(filepath.toString().concat(" successfully!")));
           return callback(null, file)
         });
       });
