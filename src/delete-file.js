@@ -2,18 +2,21 @@
 
 var storj = require('storj-lib');
 var fs = require('fs');
-// Set the bridge api URL
-var api = 'https://api.storj.io';
+var uuidV4 = require('uuid/v4');
+var config = require('./config.js')
 
-// Load keypair from your saved private key
-var keypair = storj.KeyPair(fs.readFileSync('./keys/private.key').toString());
+// How many pieces of the file can be uploaded at once
+var concurrency = 6;
+var keypair = storj.KeyPair(fs.readFileSync(config.KEYPATH).toString());
 
 // console.login using the keypair generated
-var client = storj.BridgeClient(api, {keyPair: keypair});
+var client = storj.BridgeClient(config.API, {
+  keyPair: keypair,
+  concurrency: concurrency // Set upload concurrency
+});
 
 // Key ring to hold key used to interact with uploaded file
-var keyring = storj.KeyRing('./', 'keypass');
-
+var keyring = storj.KeyRing(config.DATADIR, 'keypass');
 
 module.exports.deleteFile = function(bucketID, fileID, callback){
 	// Remove file from bucket
