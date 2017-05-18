@@ -31,5 +31,6 @@ module.exports.deleteFile = function(bucketID, fileID, callback) {
     console.log('info', 'File was successfully removed from bucket.');
     // Delete key used to interact with the file from your keyring
     keyring.del(fileID);
+    return callback(null);
   });
 }

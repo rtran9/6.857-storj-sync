@@ -104,7 +104,7 @@ function syncDir(directory, table) {
 function getAllFiles(directory) {
   console.log(directory);
   var files = [];
-  var fileTree = dirTree(directory);
+  var fileTree = dirTree(directory, {exclude: /.storjsync/});
 
   function recurseFind(children) {
     children.forEach(function(child) {
@@ -308,17 +308,24 @@ function sync(directory) {
     }, function(err, docs) {
       docs.forEach(function(file) {
         if (!allFiles.includes(file["path"])) {
-          if (!Object.keys(file["current"]).length == 0) {
+          if (Object.keys(file["current"]).length != 0) {
             console.log("file delete");
-            deleteFile.deleteFile(file["bucketid"], file["fileid"], function() {
+            deleteFile.deleteFile(file["bucketid"], file["fileid"], function(err) {
               db.update({
-                "path": file["path"],
-                "type": "file"
-              }, {
-                $set: {
-                  "current": {}
-                }
-              }, {}, function() {});
+                  "path": file["path"],
+                  "type": "file"
+                }, {
+                  $set: {
+                    "current": {}
+                  }
+                }, 
+                function(err) {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    console.log(file);
+                  }
+                });
             });
           }
         }
